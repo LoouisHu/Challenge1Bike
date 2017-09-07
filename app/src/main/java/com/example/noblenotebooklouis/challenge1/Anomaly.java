@@ -11,7 +11,7 @@ public class Anomaly {
     /**
      *
      */
-    double normal;
+    private double normal;
 
     /**
      * Creates a new anomaly detection, based on the value of normal

@@ -12,7 +12,7 @@ public class Buffers {
     /**
      * A list of buffers, which contain data
      */
-    List<List<Double>> buffers = new ArrayList();
+    private List<List<Double>> buffers = new ArrayList();
 
     /**
      * Creates a buffer around the data

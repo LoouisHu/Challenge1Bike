@@ -9,7 +9,7 @@ public class Filter {
     /**
      * The length the filter uses to calculate the moving average
      */
-    int length;
+    private int length;
 
     /**
      * Creates a new Filter which calculates moving averages
@@ -32,8 +32,9 @@ public class Filter {
         double[] filtered = new double[data.length];
         for (int i = 0; i < data.length; i++) {
 
-            double value = data[0];
+            double value = 0;
             if (i < length) {
+                value = data[0];
                 for (int j = 0; j < i; j++) {
                     value = value + data[j+1];
                 }
