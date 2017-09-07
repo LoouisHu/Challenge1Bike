@@ -8,14 +8,30 @@
 
     <TextView
         android:id="@+id/yAxis"
-        android:layout_width="91dp"
-        android:layout_height="24dp"
+        android:layout_width="163dp"
+        android:layout_height="25dp"
         android:text="Y axis"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="0.177"
+        app:layout_constraintHorizontal_bias="0.443"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.071" />
+        app:layout_constraintVertical_bias="0.201" />
+
+    <TextView
+        android:id="@+id/viewData"
+        android:layout_width="221dp"
+        android:layout_height="234dp"
+        android:text="TextView"
+        tools:layout_editor_absoluteX="69dp"
+        tools:layout_editor_absoluteY="162dp" />
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Record"
+        tools:layout_editor_absoluteX="124dp"
+        tools:layout_editor_absoluteY="431dp" />
 
 </android.support.constraint.ConstraintLayout>
