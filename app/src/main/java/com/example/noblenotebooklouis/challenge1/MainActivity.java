@@ -1,6 +1,12 @@
 package com.example.noblenotebooklouis.challenge1;
 
 import android.content.Context;
+import android.content.Intent;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.os.Environment;
+import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.hardware.SensorManager;
@@ -10,22 +16,31 @@ import android.hardware.SensorEventListener;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
+
 
 import java.io.*;
-import java.io.FileWriter;
+import java.text.DateFormat;
+import java.util.Date;
+import java.util.TimeZone;
 
 
-public class MainActivity extends AppCompatActivity implements SensorEventListener{
+public class MainActivity extends AppCompatActivity implements SensorEventListener {
+    private MyLocationListener myLocationListener;
     private float linearAcceleration;
     private float gravity;
     private boolean running;
+    private String latitude, longitude;
     private TextView yText;
-    private TextView viewData;
+    private TextView locationView;
     private Button record;
+    private StringBuilder sb;
     private Sensor sensorAccelerometer;
     private Sensor sensorGravity;
-    private SensorManager manager;
-
+    private SensorManager sensorManager;
+    private LocationManager locationManager;
+    private LocationListener locationListener;
+    private MapFragment mapFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,19 +53,47 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         gravity = (float) 9.81;
 
         // Create SensorManager
-        manager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
 
         // Accelerometer Sensor
-        sensorAccelerometer = manager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-        sensorGravity = manager.getDefaultSensor(Sensor.TYPE_GRAVITY);
+        sensorAccelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        sensorGravity = sensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY);
 
         // Register sensor listener
-        manager.registerListener(this, sensorAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
-        manager.registerListener(this, sensorGravity, SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(this, sensorAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(this, sensorGravity, SensorManager.SENSOR_DELAY_NORMAL);
+
+        locationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+        locationListener = new LocationListener() {
+            @Override
+            public void onLocationChanged(Location location) {
+                locationView.setText("Long: " + location.getLongitude() + "\n" +
+                                     "Lat: " + location.getLatitude());
+                latitude = Double.toString(location.getLatitude());
+                longitude = Double.toString(location.getLongitude());
+
+            }
+
+            @Override
+            public void onStatusChanged(String provider, int status, Bundle extras) {
+
+            }
+
+            @Override
+            public void onProviderEnabled(String provider) {
+
+            }
+
+            @Override
+            public void onProviderDisabled(String provider) {
+                startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+            }
+        };
+
 
         // Assign TextView
         yText = (TextView)findViewById(R.id.yAxis);
-        viewData = (TextView)findViewById(R.id.viewData);
+        locationView = (TextView) findViewById(R.id.location);
         record = (Button)findViewById(R.id.button);
         record.setOnClickListener(new View.OnClickListener() {
 
@@ -58,14 +101,21 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             public void onClick(View v) {
                 if(running == false) {
                     running = true;
+                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+                    sb = new StringBuilder();
                     record.setText("Recording...");
                 } else {
                     running = false;
+                    locationManager.removeUpdates(locationListener);
+                    saveData(sb.toString());
                     record.setText("Record");
 
                 }
             }
         });
+
+        //Optional Google Maps
+
     }
 
     @Override
@@ -85,9 +135,14 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     linearAcceleration = event.values[1] - gravity;
                     break;
             }
-            appendLog(Long.toString(event.timestamp) + ", " + Float.toString(event.values[1]));
-//            readData();
-            yText.setText("Y: " + linearAcceleration);
+            if (latitude != null && longitude != null) {
+                sb.append(System.currentTimeMillis() + ", " +
+                        linearAcceleration + ", " +
+                        latitude + ", " +
+                        longitude + "\n");
+                yText.setText("Y: " + linearAcceleration);
+            }
+
         }
 
     }
@@ -100,49 +155,62 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     }
 
-    private void appendLog(String text) {
+    private void saveData(String text) {
 
-        FileOutputStream outputStream;
+//        FileOutputStream outputStream;
+//
+//        DateFormat currentDateTimeString = DateFormat.getDateTimeInstance();
+//        currentDateTimeString.setTimeZone(TimeZone.getTimeZone("gmt"));
+//        String filename = currentDateTimeString.format(new Date());
+//
+//        File logFile = new File(getFilesDir(), filename);
+//        System.out.println(getFilesDir().getAbsolutePath());
+//        if(!logFile.exists()) {
+//            try {
+//                logFile.createNewFile();
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//        try {
+//            outputStream = openFileOutput("data.txt", Context.MODE_PRIVATE);
+//            outputStream.write(text.getBytes());
+//            outputStream.close();
+//        }  catch (IOException e) {
+//            e.printStackTrace();
+//        }
 
-        File logFile = new File(getFilesDir(), "data.txt");
-        if(!logFile.exists()) {
+        String state;
+        state = Environment.getExternalStorageState();
+        if (Environment.MEDIA_MOUNTED.equals(state)) {
+            File root = Environment.getExternalStorageDirectory();
+            File dir = new File(root.getAbsolutePath()+"/MyChallenge1");
+            if (!dir.exists()) {
+                dir.mkdir();
+            }
+            DateFormat currentDateTimeString = DateFormat.getDateTimeInstance();
+            currentDateTimeString.setTimeZone(TimeZone.getTimeZone("gmt"));
+            String filename = currentDateTimeString.format(new Date());
+
+            File file = new File(dir, filename + ".txt");
+            FileOutputStream fileOutputStream = null;
             try {
-                logFile.createNewFile();
+                fileOutputStream = new FileOutputStream(file);
+                fileOutputStream.write(text.getBytes());
+                fileOutputStream.close();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }
-        try {
-            outputStream = openFileOutput("data.txt", Context.MODE_PRIVATE);
-            outputStream.write(text.getBytes());
-            outputStream.close();
-        }  catch (IOException e) {
-            e.printStackTrace();
+            Toast.makeText(getApplicationContext(), "Data saved", Toast.LENGTH_SHORT).show();
+
+
+        } else {
+            Toast.makeText(getApplicationContext(), "SD Card not found", Toast.LENGTH_SHORT).show();
         }
 
 
     }
 
-//    private void readData() {
-//        String message;
-//        FileInputStream fileInputStream = null;
-//        try {
-//            fileInputStream = openFileInput("data.txt");
-//        } catch (FileNotFoundException e) {
-//            e.printStackTrace();
-//        }
-//        InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
-//        BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-//        StringBuffer stringBuffer = new StringBuffer();
-//        try {
-//            while ((message = bufferedReader.readLine()) != null) {
-//                stringBuffer.append(message + "\n");
-//            }
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        viewData.setText(stringBuffer.toString());
-//
-//
-//    }
 }

@@ -6,32 +6,61 @@
     android:layout_height="match_parent"
     tools:context="com.example.noblenotebooklouis.challenge1.MainActivity">
 
+    <FrameLayout
+        android:id="@+id/container"
+        android:layout_width="0dp"
+        android:layout_height="495dp"
+        tools:context="com.example.app.MainActivity"
+        tools:ignore="MergeRootFrame"
+        tools:layout_editor_absoluteX="6dp"
+        tools:layout_editor_absoluteY="8dp">
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:orientation="vertical">
+
+            <fragment
+                android:id="@+id/map"
+                android:name="com.google.android.gms.maps.MapFragment"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+    </FrameLayout>
+
     <TextView
         android:id="@+id/yAxis"
         android:layout_width="163dp"
         android:layout_height="25dp"
         android:text="Y axis"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="0.443"
+        app:layout_constraintHorizontal_bias="0.072"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.201" />
-
-    <TextView
-        android:id="@+id/viewData"
-        android:layout_width="221dp"
-        android:layout_height="234dp"
-        android:text="TextView"
-        tools:layout_editor_absoluteX="69dp"
-        tools:layout_editor_absoluteY="162dp" />
+        app:layout_constraintVertical_bias="0.032" />
 
     <Button
         android:id="@+id/button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Record"
-        tools:layout_editor_absoluteX="124dp"
-        tools:layout_editor_absoluteY="431dp" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.982" />
+
+    <TextView
+        android:id="@+id/location"
+        android:layout_width="170dp"
+        android:layout_height="84dp"
+        android:text="Coordinates"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.037"
+        app:layout_constraintHorizontal_bias="0.995" />
 
 </android.support.constraint.ConstraintLayout>
