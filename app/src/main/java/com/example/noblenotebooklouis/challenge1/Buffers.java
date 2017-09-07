@@ -9,8 +9,18 @@ import java.util.List;
 
 public class Buffers {
 
+    /**
+     * A list of buffers, which contain data
+     */
     List<List<Double>> buffers = new ArrayList();
 
+    /**
+     * Creates a buffer around the data
+     *
+     * @param size      The size of each buffer
+     * @param data      The data that needs to be
+     *                  put in these buffers
+     */
     public Buffers(int size, double[] data) {
         for (int i = 0; i < data.length - size; i++) {
             List<Double> buffer = new ArrayList();
@@ -21,10 +31,19 @@ public class Buffers {
         }
     }
 
+    /**
+     *
+     * @return          The size of each buffer
+     */
     public int getSize() {
         return buffers.size();
     }
 
+    /**
+     *
+     * @param i         The buffer that needs to be found
+     * @return          The buffer that was requested
+     */
     public List getBuffer(int i) {
         return buffers.get(i);
     }
