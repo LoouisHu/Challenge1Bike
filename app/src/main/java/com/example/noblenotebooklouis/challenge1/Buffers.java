@@ -12,7 +12,7 @@ public class Buffers {
     /**
      * A list of buffers, which contain data
      */
-    private List<List<Double>> buffers = new ArrayList();
+    private List<double[]> buffers = new ArrayList();
 
     /**
      * Creates a buffer around the data
@@ -23,28 +23,19 @@ public class Buffers {
      */
     public Buffers(int size, double[] data) {
         for (int i = 0; i < data.length - size; i++) {
-            List<Double> buffer = new ArrayList();
+            double[] bufferData = new double[size];
             for (int j = 0; j < size; j++) {
-                buffer.add(data[i+j]);
+                bufferData[j] = data[i + j];
             }
-            buffers.add(buffer);
         }
     }
 
-    /**
-     *
-     * @return          The size of each buffer
-     */
     public int getSize() {
         return buffers.size();
     }
 
-    /**
-     *
-     * @param i         The buffer that needs to be found
-     * @return          The buffer that was requested
-     */
-    public List getBuffer(int i) {
+    public double[] getBuffer(int i) {
         return buffers.get(i);
     }
 }
+
