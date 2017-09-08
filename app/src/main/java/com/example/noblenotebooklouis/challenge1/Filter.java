@@ -9,18 +9,7 @@ public class Filter {
     /**
      * The length the filter uses to calculate the moving average
      */
-    private int length;
-
-    /**
-     * Creates a new Filter which calculates moving averages
-     *
-     * @param length    The length this filter uses to
-     *                  calculate the moving average
-     */
-    public Filter(int length) {
-        this.length = length;
-
-    }
+    private static int length = 25;
 
     /**
      * Filters the data based on the moving average
@@ -28,7 +17,7 @@ public class Filter {
      * @param data      The data that needs to be filtered
      * @return          The filtered data
      */
-    public double[] filtering(double[] data) {
+    public static double[] filtering(double[] data) {
         double[] filtered = new double[data.length];
         for (int i = 0; i < data.length; i++) {
 

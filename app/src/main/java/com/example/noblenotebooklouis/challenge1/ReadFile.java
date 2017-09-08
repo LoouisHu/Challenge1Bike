@@ -18,25 +18,27 @@ public class ReadFile {
     /**
      * reads a file and puts the data in it in a map
      *
-     * @param path      The path to the file that needs to be read
+     * @param file      The file that needs to be read
      * @return          The map containing the data in the file
      */
-    public static List<Data> readFile(String path) {
-        List<Data> datas = new ArrayList();
-        try {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(new File(path))));
-            while (reader.readLine() != null) {
-                String line = reader.readLine();
-                String[] values = line.split(",");
-                Data data = new Data(Double.parseDouble(values[0]), Double.parseDouble(values[1]),
-                        Double.parseDouble(values[2]), Double.parseDouble(values[3]));
-                datas.add(data);
+    public static List<Data> readFile(File file) {
+        List<Data> datas = new ArrayList<Data>();
+        if (file != null) {
+            try {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
+                while (reader.readLine() != null) {
+                    String line = reader.readLine();
+                    String[] values = line.split(",");
+                    Data data = new Data(Double.parseDouble(values[0]), Double.parseDouble(values[1]),
+                            Double.parseDouble(values[2]), Double.parseDouble(values[3]));
+                    datas.add(data);
+                }
+                reader.close();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-            reader.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
         }
         return datas;
 
