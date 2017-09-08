@@ -13,6 +13,7 @@ public class Buffers {
      * A list of buffers, which contain data
      */
     private List<double[]> buffers = new ArrayList();
+    private static int size = 3;
 
     /**
      * Creates a buffer around the data
@@ -21,7 +22,7 @@ public class Buffers {
      * @param data      The data that needs to be
      *                  put in these buffers
      */
-    public Buffers(int size, double[] data) {
+    public Buffers(double[] data) {
         for (int i = 0; i < data.length - size; i++) {
             double[] bufferData = new double[size];
             for (int j = 0; j < size; j++) {

@@ -22,6 +22,7 @@ import android.widget.Toast;
 import java.io.*;
 import java.text.DateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.TimeZone;
 
 
@@ -32,6 +33,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private String latitude, longitude;
     private TextView yText;
     private TextView locationView;
+    private TextView anomalyView;
+    private Button findAnomalies;
     private Button record;
     private StringBuilder sb;
     private Sensor sensorAccelerometer;
@@ -39,6 +42,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private SensorManager sensorManager;
     private LocationManager locationManager;
     private LocationListener locationListener;
+    private File file;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,8 +114,29 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
                 }
             }
+
         });
 
+
+        anomalyView = (TextView) findViewById(R.id.anomalies);
+        findAnomalies = (Button)findViewById(R.id.find);
+        findAnomalies.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                List<Data> datas = Anomaly.getAnomalies(file);
+                if (datas.isEmpty()) {
+                    anomalyView.setText("No data found, record first");
+                } else {
+                    for (Data data : datas) {
+                        double latitude = data.getLatitude();
+                        double longitude = data.getLongitude();
+                        anomalyView.setText("Long: " + Double.toString(longitude)
+                                + ", Lat: " + Double.toString(latitude));
+                    }
+                }
+            }
+        });
         //Optional Google Maps
 
     }
@@ -190,7 +215,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             currentDateTimeString.setTimeZone(TimeZone.getTimeZone("gmt"));
             String filename = currentDateTimeString.format(new Date());
 
-            File file = new File(dir, filename + ".txt");
+            file = new File(dir, filename + ".txt");
             FileOutputStream fileOutputStream = null;
             try {
                 fileOutputStream = new FileOutputStream(file);
