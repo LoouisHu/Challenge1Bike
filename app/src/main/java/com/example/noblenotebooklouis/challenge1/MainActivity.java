@@ -26,7 +26,6 @@ import java.util.TimeZone;
 
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
-    private MyLocationListener myLocationListener;
     private float linearAcceleration;
     private float gravity;
     private boolean running;
@@ -40,7 +39,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private SensorManager sensorManager;
     private LocationManager locationManager;
     private LocationListener locationListener;
-    private MapFragment mapFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
