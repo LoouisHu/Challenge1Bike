@@ -128,12 +128,18 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 if (datas.isEmpty()) {
                     anomalyView.setText("No data found, record first");
                 } else {
+                    String text = "";
                     for (Data data : datas) {
+                        double time = data.getTime();
+                        double vibration = data.getAccelerometer();
                         double latitude = data.getLatitude();
                         double longitude = data.getLongitude();
-                        anomalyView.setText("Long: " + Double.toString(longitude)
-                                + ", Lat: " + Double.toString(latitude));
+                        text = text + "Time: " + Double.toString(time) + ", Vib: "
+                                + Double.toString(vibration)
+                                + "\nLong: " + Double.toString(longitude)
+                                + ", Lat: " + Double.toString(latitude) + "\n";
                     }
+                    anomalyView.setText(text);
                 }
             }
         });

@@ -13,7 +13,7 @@ public class Anomaly {
     /**
      *
      */
-    private static double normal = 3;
+    private static double normal = 1.5;
 
     /**
      * Calculates the mean of a buffer
@@ -22,7 +22,7 @@ public class Anomaly {
      * @return          The mean of this buffer
      */
     public static double mean (double[] buffer) {
-        double total = 0.000000;
+        double total = 0;
         for (double data : buffer) {
             total = total + data;
         }
@@ -36,10 +36,10 @@ public class Anomaly {
      * @return          The variance of this buffer
      */
     public static double variance (double[] buffer) {
-        double variance = 0.000000;
+        double variance = 0;
         double mean = mean(buffer);
         for (double data : buffer) {
-            variance = variance + (data - mean)*(data - mean);
+            variance = variance + ((data - mean)*(data - mean));
         }
         return variance/buffer.length;
     }
@@ -50,11 +50,11 @@ public class Anomaly {
      * @param buffers   The buffers that need to be checked for an anomaly
      * @return          True if there is an anomaly, false if there isn't
      */
-    public static boolean anomaly (double mean, List<double[]> buffers) {
+    public static boolean anomaly (double var, List<double[]> buffers) {
         boolean anomaly = true;
         for (int i = 0; i < buffers.size(); i++) {
             double variance = variance(buffers.get(i));
-            if (variance > mean-normal && variance < mean+normal) {
+            if (variance < var + normal) {
                 anomaly = false;
             }
         }
@@ -67,49 +67,35 @@ public class Anomaly {
      * @param file         The file that needs to be checked
      * @return                  A list of all data in the file that contain anomalies
      */
-    public static List<Data> getAnomalies(File file) {
+    public static List<Data> getAnomalies (File file) {
         List<Data> datas = ReadFile.readFile(file);
         List<Data> results = new ArrayList<Data>();
         if (!datas.isEmpty()) {
             double[] data = new double[datas.size()];
-            double mean = mean(data);
+            double var = variance(data);
             for (int i = 0; i < datas.size(); i++) {
                 data[i] = datas.get(i).getAccelerometer();
             }
             double[] filteredData = Filter.filtering(data);
             Buffers buffers = new Buffers(filteredData);
             for (int j = 0; j < filteredData.length; j++) {
-                List<double[]> checkBuffers = new ArrayList();
+                List<double[]> checkBuffers = new ArrayList<double[]>();
                 for (int k = 0; k < buffers.getSize(); k++) {
-                    for (double value : buffers.getBuffer(k)) {
-                        if (filteredData[j] == value) {
-                            checkBuffers.add(buffers.getBuffer(k));
+                    double[] buffer = buffers.getBuffer(k);
+                    for (int l = 0; l < buffer.length; l++) {
+                        if (filteredData[j] == buffer[l]) {
+                            checkBuffers.add(buffer);
                         }
                     }
                 }
-                if (anomaly(mean, checkBuffers)) {
+
+                if (anomaly(var, checkBuffers)) {
                     results.add(datas.get(j));
                 }
             }
         }
         return results;
 
-    }
-
-    /**
-     *
-     * @return          The normal value that checks for anomalies
-     */
-    public double getNormal() {
-        return normal;
-    }
-
-    /**
-     *
-     * @param normal    The value to which normal should be set
-     */
-    public void setNormal(double normal) {
-        this.normal = normal;
     }
 
 }
